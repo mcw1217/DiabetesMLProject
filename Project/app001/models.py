@@ -74,6 +74,13 @@ class User():
         cursor.execute(f"delete from survey where hospital={hospital} and userid={userid} and y={y} and m={m} and d={d}")
         mysql.connection.commit()
 
+    def save_survey(survey_content):
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(f"INSERT INTO save_survey (survey_content) VALUES ({survey_content})")
+        mysql.connection.commit()
+        
+        # save_survey 확인 필요
+        
     
 
 
