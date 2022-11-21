@@ -4,6 +4,7 @@ from app001 import app
 from app001.models import User
 import pickle
 import numpy as np
+import csv
 
 app.secret_key = "your secret key"
 
@@ -230,12 +231,29 @@ def save_survey():
         if session["role"] == "관리자":
             survey_content = request.form["survey_content"]
             diaclass = request.form["Dia"]
-            userid = request.form["user_id"]
+            userid = request.form["userid"]
             y = request.form["y"]
             m = request.form["m"]
             d = request.form["d"]
-            survey_content = survey_content.append(diaclass)
+            print(f"{userid},{y},{m},{d} ")
+            survey_content = survey_content.replace("'","")
+            survey_content = survey_content.replace("[","")
+            survey_content = survey_content.replace("]","")
+            survey_content = f"'{survey_content},{diaclass}'"
+            print(survey_content)
             User.save_survey(survey_content)
-            User.delete_booking(session["id"], userid, y, m, d)
+            User.delete_booking(session["id"], userid,y, m, d)
             return redirect(url_for("admin_booking"))
     return redirect(url_for("home"))
+
+
+@app.route("/print_csv",methods=["GET","POST"])
+def print_csv():
+    if "loggedin" in session:
+        if session["role"] == "관리자":
+            get_list = User.get_save_survey()
+            f = open('./app001/dataset/save_survey.csv','a',newline="")
+            wr = csv.writer(f)
+            wr.writerows(get_list)    
+            f.close()
+    return "저장완료!"

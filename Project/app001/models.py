@@ -79,7 +79,15 @@ class User():
         cursor.execute(f"INSERT INTO save_survey (survey_content) VALUES ({survey_content})")
         mysql.connection.commit()
         
-        # save_survey 확인 필요
+    def get_save_survey():
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute("select * from save_survey")
+        booking = list()
+        for fet in cursor.fetchall():
+            fet = fet['survey_content']
+            fet = fet.split(",")
+            booking.append(fet)
+        return booking
         
     
 
