@@ -68,6 +68,17 @@ class User():
         for i,fet in enumerate(cursor.fetchall()):
             booking[i] = fet
         return booking
+
+    def delete_booking(hospital, userid,y,m,d):
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute(f"delete from survey where hospital={hospital} and userid={userid} and y={y} and m={m} and d={d}")
+        mysql.connection.commit()
+
+    
+
+
+    
+        
         
         
                        

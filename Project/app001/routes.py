@@ -44,7 +44,7 @@ def home():
         if session['role'] == "관리자":
             return render_template('admin_home.html',username=session['username'],id=session['id'])
         else:
-            return render_template('home.html', username=session['username'])
+            return render_template('home.html', username=session['username'],session=session)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
   
@@ -64,7 +64,10 @@ def profile():
     # Check if user is loggedin
     if 'loggedin' in session:
         account = User.get_information([session['id']])
-        return render_template('profile.html', account=account)
+        if session['role'] == "관리자":
+            return render_template('admin_profile.html',account=account)
+        else:
+            return render_template('profile.html', account=account)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
     
@@ -160,9 +163,41 @@ def booking_ans():
 @app.route("/admin_booking", methods=['GET','POST'])
 def admin_booking():
     if 'loggedin' in session:
-        # User is loggedin show them the home page
         if session['role'] == "관리자":
             booking = User.get_bookinglist(session['id'])
             return render_template("admin_booking.html",booking=booking)
     return redirect(url_for('home'))
+
+@app.route("/delete_booking", methods=["GET","POST"])
+def delete_booking():
+    if 'loggedin' in session:
+        if session['role'] == "관리자":
+            userid = request.args.get("userid")   
+            y = request.args.get("y")
+            m = request.args.get("m")
+            d = request.args.get("d")
+            User.delete_booking(session['id'], userid, y, m, d)
+            return redirect(url_for("admin_booking"))
+    return redirect(url_for('home'))
+
+@app.route("/check_booking",methods=["GET","POST"])
+def check_booking():
+    if 'loggedin' in session:
+        if session['role'] == "관리자":
+            userid = request.args.get("userid")   
+            y = request.args.get("y")
+            m = request.args.get("m")
+            d = request.args.get("d")
+            survey_content = request.args.get("survey_content")
+            check_booking = dict()
+            check_booking["userid"] = userid 
+            check_booking["y"] = y
+            check_booking["m"] = m
+            check_booking["d"] = d
+            check_booking["survey_content"] = survey_content.split(",")
+            return render_template("check_booking.html",check_booking=check_booking)
+    return redirect(url_for('home'))
+            
+
+    
 
